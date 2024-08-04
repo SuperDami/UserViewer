@@ -13,13 +13,13 @@ class UserRepoListViewModel: ObservableObject {
     private enum Constants {
         static let perPageNumber = 20
     }
+    @Published private(set) var repoList: DataFetchStatus<[UserRepo]> = .init(data: [])
+    @Published private(set) var userDetail: DataFetchStatus<UserDetail?> = .init(data: nil)
+    private var hasMoreToLoad = false
+    var login: String = ""
 
     private let repo: GithubRepository
     private var coordinator: AppCoordinator
-    @Published private(set) var repoList: DataFetchStatus<[UserRepo]> = .init(data: [])
-    @Published private(set) var userDetail: DataFetchStatus<UserDetail?> = .init(data: nil)
-    var login: String = ""
-
     init(repo: GithubRepository, coordinator: AppCoordinator) {
         self.repo = repo
         self.coordinator = coordinator
@@ -58,10 +58,13 @@ class UserRepoListViewModel: ObservableObject {
 
         do {
             if repoList.data.isEmpty {
-                repoList.data = try await repo.getUserRepoList(login: login, page: 0, perPage: Constants.perPageNumber)
-            } else {
+                let newList = try await repo.getUserRepoList(login: login, page: 0, perPage: Constants.perPageNumber)
+                hasMoreToLoad = newList.count >= Constants.perPageNumber
+                repoList.data = newList
+            } else if hasMoreToLoad {
                 let currentPage: Int = repoList.data.count / Constants.perPageNumber
                 let newListItem = try await repo.getUserRepoList(login: login, page: currentPage + 1, perPage: Constants.perPageNumber)
+                hasMoreToLoad = newListItem.count >= Constants.perPageNumber
                 repoList.data += newListItem
             }
         } catch {
