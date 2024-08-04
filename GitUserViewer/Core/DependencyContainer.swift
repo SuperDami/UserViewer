@@ -5,7 +5,7 @@ import SwiftUI
 
 @MainActor
 class DependencyContainer {
-    static var shared: DependencyContainer = .init()
+    static let shared: DependencyContainer = .init()
 
     lazy var githubRepo: GithubRepository = {
         return GithubRepositoryImp(baseURL: "https://api.github.com/")

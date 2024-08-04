@@ -3,7 +3,7 @@
 import Foundation
 import Combine
 
-struct DataFetchStatus<T> {
+struct DataFetchStatus<T: Equatable>: Equatable {
     var data: T
     var isLoading: Bool = false
 }

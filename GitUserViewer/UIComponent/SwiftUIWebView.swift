@@ -23,6 +23,7 @@ struct WebView: UIViewRepresentable {
     init(url: URL) {
         self.webView = WKWebView(frame: .zero)
         self.url = url
+        webView.load(URLRequest(url: url))
     }
 
     func makeUIView(context: Context) -> WKWebView {
@@ -30,6 +31,6 @@ struct WebView: UIViewRepresentable {
     }
 
     func updateUIView(_ uiView: WKWebView, context: Context) {
-        webView.load(URLRequest(url: url))
+
     }
 }
